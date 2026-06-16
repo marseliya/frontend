@@ -1,0 +1,243 @@
+@import "tailwindcss";
+
+@theme {
+  /* Mode Terang (Default) */
+  --color-book-light: #f4f1ea;       /* Krem koran untuk background utama */
+  --color-book-card-light: #faf8f5;  /* Krem cerah untuk kotak/komponen */
+  --color-book-dark: #121212;        /* Hitam pekat */
+  --color-book-alert: #18181b;
+}
+
+/* Mode Gelap: Ubah nilai variabelnya di sini */
+.dark {
+  --color-book-light: #1c1c1c;       /* Hitam abu untuk background utama */
+  --color-book-card-light: #121212;  /* Hitam pekat untuk kotak/komponen */
+}
+
+/* Tambahkan di index.css / global.css */
+
+html, body {
+  background-color: var(--color-book-light);
+  color: #09090b;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+html.dark, html.dark body {
+  color: #ffffff;
+}
+
+/* Paksa semua elemen ikut warna teks dari parent */
+*, *::before, *::after {
+  color: inherit;
+}
+
+input,
+textarea,
+select {
+  background-color: transparent;
+  color: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #a1a1aa;
+}
+
+/* ── Badge ───────────────────────────────────────────────── */
+.badge { display: inline-block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 6px; border-width: 1px; border-style: solid; font-family: monospace; }
+.badge-zinc   { background-color: #f4f4f5; color: #52525b !important; border-color: #e4e4e7; }
+.badge-purple { background-color: #faf5ff; color: #9333ea !important; border-color: #e9d5ff; }
+.badge-green  { background-color: #ecfdf5; color: #059669 !important; border-color: #a7f3d0; }
+.badge-amber  { background-color: #fffbeb; color: #d97706 !important; border-color: #fde68a; }
+.badge-red    { background-color: #fef2f2; color: #ef4444 !important; border-color: #fecaca; }
+
+.dark .badge-zinc   { background-color: #27272a; color: #a1a1aa !important; border-color: #3f3f46; }
+.dark .badge-purple { background-color: #3b0764; color: #d8b4fe !important; border-color: #7e22ce; }
+.dark .badge-green  { background-color: #064e3b; color: #6ee7b7 !important; border-color: #065f46; }
+.dark .badge-amber  { background-color: #451a03; color: #fcd34d !important; border-color: #92400e; }
+.dark .badge-red    { background-color: #450a0a; color: #fca5a5 !important; border-color: #991b1b; }
+
+/* ── Tombol ──────────────────────────────────────────────── */
+.btn-outline { color: #3f3f46 !important; border-color: #e4e4e7; background-color: transparent; }
+.btn-outline:hover { color: #09090b !important; border-color: #18181b; }
+
+.btn-solid { background-color: #18181b !important; color: #ffffff !important; border: none; }
+.btn-solid:hover { background-color: #3f3f46 !important; }
+
+.btn-danger { color: #ef4444 !important; border-color: #fca5a5; background-color: transparent; }
+.btn-danger:hover { background-color: #ef4444 !important; color: #ffffff !important; }
+
+.btn-ghost { color: #71717a !important; background-color: transparent; }
+.btn-ghost:hover { color: #09090b !important; }
+
+.dark .btn-outline { color: #d4d4d8 !important; border-color: #3f3f46; }
+.dark .btn-outline:hover { color: #ffffff !important; border-color: #ffffff; }
+.dark .btn-ghost { color: #a1a1aa !important; }
+.dark .btn-ghost:hover { color: #ffffff !important; }
+
+
+/* ALERT */
+
+/* ── Toast Alert dengan Tema Buku ── */
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  pointer-events: none;
+}
+
+.toast-item {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  min-width: 280px;
+  max-width: 380px;
+  transition: all 0.3s ease-in-out;
+  font-family: monospace;
+}
+
+.toast-item.toast-enter {
+  transform: translateX(100%);
+  opacity: 0;
+  animation: slideIn 0.3s ease-in-out forwards;
+}
+
+.toast-item.toast-exit {
+  animation: slideOut 0.3s ease-in-out forwards;
+}
+
+@keyframes slideIn {
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Success - Hijau earthy seperti buku */
+.toast-success {
+  background-color: #ecfdf5;
+  border-left: 4px solid #059669;
+  border-right: 1px solid #d1d5db;
+  border-top: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+  color: #065f46;
+}
+
+.dark .toast-success {
+  background-color: #1a2e1a;
+  border-left-color: #34d399;
+  border-right-color: #3f3f46;
+  border-top-color: #3f3f46;
+  border-bottom-color: #3f3f46;
+  color: #a7f3d0;
+}
+
+/* Error - Merah seperti sampul buku tua */
+.toast-error {
+  background-color: #fef2f2;
+  border-left: 4px solid #dc2626;
+  border-right: 1px solid #d1d5db;
+  border-top: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+  color: #991b1b;
+}
+
+.dark .toast-error {
+  background-color: #3d1a1a;
+  border-left-color: #f87171;
+  border-right-color: #3f3f46;
+  border-top-color: #3f3f46;
+  border-bottom-color: #3f3f46;
+  color: #fecaca;
+}
+
+/* Warning - Kuning seperti kertas tua */
+.toast-warning {
+  background-color: #fffbeb;
+  border-left: 4px solid #d97706;
+  border-right: 1px solid #d1d5db;
+  border-top: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+  color: #92400e;
+}
+
+.dark .toast-warning {
+  background-color: #3d2e1a;
+  border-left-color: #fbbf24;
+  border-right-color: #3f3f46;
+  border-top-color: #3f3f46;
+  border-bottom-color: #3f3f46;
+  color: #fde68a;
+}
+
+/* Info - Biru seperti tinta */
+.toast-info {
+  background-color: #eff6ff;
+  border-left: 4px solid #2563eb;
+  border-right: 1px solid #d1d5db;
+  border-top: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+  color: #1e3a8a;
+}
+
+.dark .toast-info {
+  background-color: #1a2a3d;
+  border-left-color: #60a5fa;
+  border-right-color: #3f3f46;
+  border-top-color: #3f3f46;
+  border-bottom-color: #3f3f46;
+  color: #bfdbfe;
+}
+
+/* Icons dan tombol close */
+.toast-icon-wrapper {
+  flex-shrink: 0;
+}
+
+.toast-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.toast-message {
+  flex: 1;
+  font-size: 0.8rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.toast-close {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: all 0.2s;
+  margin: -0.25rem -0.25rem -0.25rem 0;
+}
+
+.toast-close:hover {
+  opacity: 0.7;
+  transform: scale(1.1);
+}
+
+.toast-close-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
