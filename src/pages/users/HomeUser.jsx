@@ -75,7 +75,6 @@ const HomeUser = () => {
   const fetchVouchers = async () => {
     try {
       const response = await api.get("/api/vouchers/active");
-      console.log("voucher response:", response.data); 
       setVouchers(response.data.data || []);
     } catch (error) {
       console.error("Gagal fetch vouchers:", error);

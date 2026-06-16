@@ -94,7 +94,7 @@ const ProfileUser = () => {
             api.get("/api/profile-user"),
             api.get("/api/orders"),
             api.get("/api/carts"),
-            api.get("/api/books"), 
+            api.get("/api/books"),
             api.get("/api/orders/order-items"),
           ]);
 
@@ -115,7 +115,7 @@ const ProfileUser = () => {
             ...cart,
             book: booksMap[cart.book_id] || null,
           }))
-          .filter((item) => item.book !== null); // Hanya yang bukunya masih ada
+          .filter((item) => item.book !== null);
 
         const myOrders = allOrders.filter((o) => o.user_id === profileUser?.id);
         const ordersWithBooks = myOrders.map((order) => {
@@ -300,7 +300,7 @@ const ProfileUser = () => {
         o.status_pengambilan === "belum diambil" ||
         o.status_pengambilan === "dikirim"
     );
-    
+
     if (hasActiveOrder) {
       setDeleteError(
         "Akun tidak dapat dihapus karena masih ada pesanan yang aktif."
@@ -308,12 +308,12 @@ const ProfileUser = () => {
       error("Masih ada pesanan yang aktif.");
       return;
     }
-  
+
     const hasOrderHistory = orders.length > 0;
-    const deleteType = hasOrderHistory 
-      ? "soft delete (riwayat pesanan tetap tersimpan)" 
+    const deleteType = hasOrderHistory
+      ? "soft delete (riwayat pesanan tetap tersimpan)"
       : "hapus permanen";
-  
+
     showConfirm(
       "Hapus Akun",
       `Akun Anda akan ${deleteType}. Apakah Anda yakin?`,
@@ -321,10 +321,10 @@ const ProfileUser = () => {
         setDeleteLoading(true);
         try {
           const response = await api.delete(`/api/users/delete/${user.id}`);
-          
+
           // CEK RESPONSE DARI BACKEND
           if (response.data.success) {
-            localStorage.removeItem('token'); 
+            localStorage.removeItem("token");
             success(response.data.message);
             navigate("/");
           } else {
@@ -332,7 +332,9 @@ const ProfileUser = () => {
           }
         } catch (err) {
           console.error("Delete account error:", err);
-          setDeleteError(err.response?.data?.message || "Gagal menghapus akun.");
+          setDeleteError(
+            err.response?.data?.message || "Gagal menghapus akun."
+          );
           error(err.response?.data?.message || "Gagal menghapus akun.");
           setDeleteLoading(false);
         }
@@ -341,16 +343,28 @@ const ProfileUser = () => {
   };
 
   const handleCancelOrder = async (order) => {
+    if (
+      order.status_pembayaran !== "pending" ||
+      order.status_pengambilan !== "pending"
+    ) {
+      error("Order hanya bisa dibatalkan jika status masih pending");
+      return;
+    }
+
     showConfirm(
       "Batalkan Pesanan",
-      "Apakah Anda yakin ingin membatalkan pesanan ini?",
+      "Apakah Anda yakin ingin membatalkan pesanan ini? Stok buku akan dikembalikan.",
       async () => {
         try {
-          await api.delete(`/api/orders/delete/${order.id}`);
-          setOrders((prev) => prev.filter((o) => o.id !== order.id));
-          success("Pesanan berhasil dibatalkan");
+          const response = await api.delete(`/api/orders/delete/${order.id}`);
+
+          if (response.data.success) {
+            // Hapus dari daftar orders
+            setOrders((prev) => prev.filter((o) => o.id !== order.id));
+            success(response.data.message || "Pesanan berhasil dibatalkan");
+          }
         } catch (err) {
-          console.log(err);
+          console.error("Cancel order error:", err);
           error(err.response?.data?.message || "Gagal membatalkan pesanan");
         }
       }
@@ -685,29 +699,23 @@ const ProfileUser = () => {
                 )}
 
                 <div className="flex flex-wrap gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
-                  {/* BATAL ORDER */}
-                  <button
-                    disabled={
-                      order.status_pembayaran === "selesai" ||
-                      order.status_pengambilan === "selesai"
-                    }
-                    onClick={() => handleCancelOrder(order)}
-                    className={`px-3 py-1 text-xs text-white rounded ${
-                      order.status_pembayaran === "selesai" ||
-                      order.status_pengambilan === "selesai"
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-red-500 hover:bg-red-600"
-                    }`}
-                  >
-                    Batalkan
-                  </button>
+                  {/* ── TOMBOL BATALKAN ── */}
+                  {order.status_pembayaran === "pending" &&
+                    order.status_pengambilan === "pending" && (
+                      <button
+                        onClick={() => handleCancelOrder(order)}
+                        className="px-3 py-1 text-xs text-white rounded bg-red-500 hover:bg-red-600 cursor-pointer"
+                      >
+                        Batalkan
+                      </button>
+                    )}
 
-                  {/* 🔥 TOMBOL CHAT (HANYA UNTUK STATUS DIKIRIM) */}
+                  {/* ── TOMBOL CHAT (HANYA UNTUK STATUS DIKIRIM) ── */}
                   {order.metode_pengambilan === "diantar" &&
                     order.status_pengambilan === "dikirim" && (
                       <button
                         onClick={() => setChatOrder(order)}
-                        className="relative px-3 py-1 text-xs text-white bg-blue-500 hover:bg-blue-600 rounded flex items-center gap-1"
+                        className="relative px-3 py-1 text-xs text-white bg-blue-500 hover:bg-blue-600 rounded flex items-center gap-1 cursor-pointer"
                       >
                         💬 Chat
                         {unreadCounts[order.id] > 0 && (

@@ -51,6 +51,9 @@ const Badge = ({ children, color = "zinc" }) => {
   );
 };
 
+// ============================================================
+// MODAL FORM VOUCHER (CREATE / EDIT)
+// ============================================================
 const VoucherModal = ({
   open,
   onClose,
@@ -226,6 +229,161 @@ const VoucherModal = ({
   );
 };
 
+// ============================================================
+// MODAL DETAIL VOUCHER
+// ============================================================
+const VoucherDetailModal = ({ open, onClose, voucher, loading }) => {
+  if (!open || !voucher) return null;
+
+  const formatRupiah = (angka) =>
+    new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(angka);
+
+  const formatDate = (date) =>
+    date
+      ? new Date(date).toLocaleDateString("id-ID", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })
+      : "-";
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ backgroundColor: "rgba(0,0,0,0.55)" }}
+    >
+      <div className="bg-book-card-light border border-zinc-200 dark:border-zinc-800 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 bg-book-card-light z-10">
+          <h2 className="text-xs uppercase tracking-[0.2em] font-semibold text-zinc-500">
+            Detail Voucher
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white text-xl cursor-pointer"
+          >
+            ×
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="p-6 text-center text-zinc-500">Memuat...</div>
+        ) : (
+          <div className="p-6 space-y-5">
+            {/* Header */}
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-xl font-semibold text-zinc-900 dark:text-white">
+                  {voucher.nama_vouchers}
+                </h3>
+                <div className="flex gap-2 mt-2">
+                  <Badge
+                    color={
+                      voucher.tipe_vouchers === "percent" ? "purple" : "green"
+                    }
+                  >
+                    {voucher.tipe_vouchers}
+                  </Badge>
+                  <Badge color={voucher.is_active ? "green" : "red"}>
+                    {voucher.is_active ? "Aktif" : "Nonaktif"}
+                  </Badge>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                  {voucher.tipe_vouchers === "percent"
+                    ? `${voucher.nilai}%`
+                    : formatRupiah(voucher.nilai)}
+                </p>
+                <p className="text-[10px] uppercase tracking-widest text-zinc-400">
+                  {voucher.tipe_vouchers === "percent" ? "Diskon" : "Potongan"}
+                </p>
+              </div>
+            </div>
+
+            {/* Detail Grid */}
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-zinc-400">
+                  Stok
+                </p>
+                <p className="text-sm font-medium text-zinc-900 dark:text-white">
+                  {voucher.stok}
+                </p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-zinc-400">
+                  Max per User
+                </p>
+                <p className="text-sm font-medium text-zinc-900 dark:text-white">
+                  {voucher.max_usage_per_user}
+                </p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-zinc-400">
+                  Tanggal Mulai
+                </p>
+                <p className="text-sm font-medium text-zinc-900 dark:text-white">
+                  {formatDate(voucher.tanggal_mulai)}
+                </p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-zinc-400">
+                  Tanggal Selesai
+                </p>
+                <p className="text-sm font-medium text-zinc-900 dark:text-white">
+                  {formatDate(voucher.tanggal_selesai)}
+                </p>
+              </div>
+            </div>
+
+            {/* Usage Info */}
+            <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800">
+              <p className="text-[10px] uppercase tracking-widest text-zinc-400 mb-2">
+                Penggunaan
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-zinc-50 dark:bg-zinc-900/50 p-3 border border-zinc-200 dark:border-zinc-700">
+                  <p className="text-2xl font-bold text-zinc-900 dark:text-white">
+                    {voucher.total_used || 0}
+                  </p>
+                  <p className="text-[10px] uppercase tracking-widest text-zinc-400">
+                    Total Digunakan
+                  </p>
+                </div>
+                <div className="bg-zinc-50 dark:bg-zinc-900/50 p-3 border border-zinc-200 dark:border-zinc-700">
+                  <p className="text-2xl font-bold text-zinc-900 dark:text-white">
+                    {voucher.stok - (voucher.total_used || 0)}
+                  </p>
+                  <p className="text-[10px] uppercase tracking-widest text-zinc-400">
+                    Sisa Stok
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action */}
+            <div className="flex justify-end gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+              <button
+                onClick={onClose}
+                className="px-6 py-2 border border-zinc-300 dark:border-zinc-700 text-xs uppercase tracking-widest font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-500 transition-colors rounded-none cursor-pointer"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ============================================================
+// MAIN COMPONENT
+// ============================================================
 const AdminVouchers = () => {
   const {
     success: toastSuccess,
@@ -240,6 +398,11 @@ const AdminVouchers = () => {
   const [selectedId, setSelectedId] = useState(null);
   const [form, setForm] = useState(defaultForm);
   const navigate = useNavigate();
+
+  // State untuk modal detail
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [selectedVoucher, setSelectedVoucher] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
 
   const [confirmState, setConfirmState] = useState({
     isOpen: false,
@@ -311,6 +474,23 @@ const AdminVouchers = () => {
       is_active: voucher.is_active,
     });
     setModalOpen(true);
+  };
+
+  // ============================================================
+  // FUNGSI BUKA DETAIL
+  // ============================================================
+  const openDetail = async (voucher) => {
+    try {
+      setDetailLoading(true);
+      const res = await api.get(`/api/vouchers/${voucher.id}`);
+      setSelectedVoucher(res.data.data || res.data);
+      setDetailModalOpen(true);
+    } catch (err) {
+      console.error("Gagal ambil detail voucher:", err);
+      toastError("Gagal memuat detail voucher");
+    } finally {
+      setDetailLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -441,6 +621,13 @@ const AdminVouchers = () => {
                 </p>
               </div>
               <div className="flex justify-end gap-2 mt-5 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+                {/* 🔥 TOMBOL DETAIL */}
+                <button
+                  onClick={() => openDetail(v)}
+                  className="px-5 py-2 border border-zinc-300 dark:border-zinc-700 text-xs uppercase tracking-widest text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-500 transition cursor-pointer"
+                >
+                  Detail
+                </button>
                 <button
                   onClick={() => openEdit(v)}
                   className="px-5 py-2 border border-zinc-300 dark:border-zinc-700 text-xs uppercase tracking-widest text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-500 transition cursor-pointer"
@@ -453,6 +640,7 @@ const AdminVouchers = () => {
         </div>
       )}
 
+      {/* MODAL FORM */}
       <VoucherModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -462,6 +650,15 @@ const AdminVouchers = () => {
         loading={loading}
         mode={mode}
       />
+
+      {/* 🔥 MODAL DETAIL */}
+      <VoucherDetailModal
+        open={detailModalOpen}
+        onClose={() => setDetailModalOpen(false)}
+        voucher={selectedVoucher}
+        loading={detailLoading}
+      />
+
       <ConfirmModal
         isOpen={confirmState.isOpen}
         title={confirmState.title}
